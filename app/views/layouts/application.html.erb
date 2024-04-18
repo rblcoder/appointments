@@ -11,6 +11,20 @@
   </head>
 
   <body>
+  <nav>
+  <%= link_to "Patients", patients_url %>
+   <%= link_to "Doctors", doctors_url %>
+  <% if receptionist_signed_in? %>
+    <%= form_tag(destroy_receptionist_session_path, method: :delete, style: 'display: inline-block;') do %>
+      <%= submit_tag "Sign Out" %>
+    <% end %>
+  <% else %>
+    <%= link_to "Sign Up", new_receptionist_registration_path %>
+    <%= link_to "Sign In", new_receptionist_session_path %>
+  <% end %>
+  </nav>
+  <p class="notice"><%= notice %></p>
+  <p class="alert"><%= alert %></p>
     <%= yield %>
   </body>
 </html>
