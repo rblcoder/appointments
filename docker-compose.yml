@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: "postgres -c 'max_connections=500'"
+    environment:
+      POSTGRES_DB: myappdb
+      POSTGRES_USER: my_user
+      POSTGRES_PASSWORD: ILoveDoingKnowBe4Training!
+    ports:
+      - "5432:5432"
+  myapp-web:
+    build: .
+    command: sh -c "rails db:migrate && rails server -b 0.0.0.0"
+    environment:
+      DB_HOST: db
+      DB_NAME: myappdb
+      DB_USERNAME: my_user
+      DB_PASSWORD: ILoveDoingKnowBe4Training!
+      DATABASE: postgres
+    volumes:
+      - .:/app:cached
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U ${DB_USERNAME} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 20s
+      retries: 10
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+volumes:
+  postgres_data: {}
+networks:
+  default:
+    name: myapp_default
